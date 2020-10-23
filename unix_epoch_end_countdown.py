@@ -17,6 +17,7 @@ import pygame
 import time
 import numpy as np
 from random import choice
+from os import listdir
 
 
 # Colors
@@ -24,18 +25,9 @@ BLACK = (0, 0, 0)
 RED = (255, 0, 0)
 
 
-# Constants
+# Music (all songs in this list are made my Pogo)
 MUSIC_FOLDER = "data/music/"
-MUSICBOARD = (
-    "Bite Size Candies.ogg",
-    "Boy & Bear.ogg",
-    "Data & Picard.ogg",
-    "Grow Fonder.ogg",
-    "Jaaam.ogg",
-    "Kaleidogorgon.ogg",
-    "Lead Breakfast.ogg",
-    "Toyz Noize.ogg"
-) # All songs in this list are made my Pogo.
+MUSICBOARD = tuple([song for song in listdir(MUSIC_FOLDER) if song.endswith(".ogg")])
 
 
 # Draws the timer
