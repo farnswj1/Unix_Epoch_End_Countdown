@@ -15,7 +15,6 @@ All songs in this module are created by Pogo.
 # Imported modules
 import pygame
 import time
-import sys
 import numpy as np
 from random import choice
 
