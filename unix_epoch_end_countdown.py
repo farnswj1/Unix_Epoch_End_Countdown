@@ -120,7 +120,8 @@ class UnixEpochEndCountdown(object):
     
 
     # The returned array contains the numbers in order of total days, hours, minutes, and seconds. 
-    def __convert_seconds_to_time(self, seconds):
+    @staticmethod
+    def __convert_seconds_to_time(seconds):
         return np.array(
             [seconds // 86400, (seconds // 3600) % 24, (seconds // 60) % 60, seconds % 60],
             dtype="int32"
