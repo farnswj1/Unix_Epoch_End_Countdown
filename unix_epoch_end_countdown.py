@@ -15,7 +15,6 @@ All songs in this module are created by Pogo.
 # Imported modules
 import pygame
 import time
-import numpy as np
 from random import choice
 from os import listdir
 
@@ -122,10 +121,7 @@ class UnixEpochEndCountdown(object):
     # The returned array contains the numbers in order of total days, hours, minutes, and seconds. 
     @staticmethod
     def __convert_seconds_to_time(seconds):
-        return np.array(
-            [seconds // 86400, (seconds // 3600) % 24, (seconds // 60) % 60, seconds % 60],
-            dtype="int32"
-        )
+        return [seconds // 86400, (seconds // 3600) % 24, (seconds // 60) % 60, seconds % 60]
 
 
 # Executes the program.
