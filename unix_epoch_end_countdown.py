@@ -9,19 +9,23 @@ systems will not be able to represent time in 32 bits.
 
 Every 5 minutes, a song will be randomly selected and played.
 All songs in this module are created by Pogo.
-
 '''
 
 # Imported modules
-import pygame
-import time
+from collections import namedtuple
 from random import choice
 from os import listdir
+import pygame
+import time
 
 
 # Colors
 BLACK = (0, 0, 0)
 RED = (255, 0, 0)
+
+
+# Named Tuple(s)
+TimeArray = namedtuple("TimeArray", "days hours minutes seconds")
 
 
 class UnixEpochEndCountdown:
@@ -68,8 +72,8 @@ class UnixEpochEndCountdown:
             self.__time_array = self.__convert_seconds_to_time(delta)
 
             # A song will be randomly chosen and played every 5 minutes.
-            if self.__time_array[2] % 5 == 0:  # Minutes at a mutiple of 5
-                if self.__time_array[3] == 0:  # Seconds at 0
+            if self.__time_array.minutes % 5 == 0:
+                if self.__time_array.seconds == 0:
                     if next_song_ready:
                         pygame.mixer.music.play()
                         next_song_ready = False
@@ -130,7 +134,7 @@ class UnixEpochEndCountdown:
     # The returned array contains the numbers in order of total days, hours, minutes, and seconds.
     @staticmethod
     def __convert_seconds_to_time(seconds: int):
-        return (
+        return TimeArray(
             seconds // 86400,  # Days
             (seconds // 3600) % 24,  # Hours
             (seconds // 60) % 60,  # Minutes
