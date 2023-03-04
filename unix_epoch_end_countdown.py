@@ -4,7 +4,7 @@ Unix Epoch End Countdown
 October 20, 2020
 
 This program will render the time in days, hours, minutes, and seconds
-until the Unix epoch expires. Once the timer reaches 0 in 2038, many 
+until the Unix epoch expires. Once the timer reaches 0 in 2038, many
 systems will not be able to represent time in 32 bits.
 
 Every 5 minutes, a song will be randomly selected and played.
@@ -24,7 +24,7 @@ BLACK = (0, 0, 0)
 RED = (255, 0, 0)
 
 
-class UnixEpochEndCountdown(object):
+class UnixEpochEndCountdown:
     # Constructor
     def __init__(self):
         # Initializes pygame and sets the name of window
@@ -33,44 +33,52 @@ class UnixEpochEndCountdown(object):
 
         # Sets the window dimensions and clock
         self.__window = pygame.display.set_mode((800, 200))
-        clock = pygame.time.Clock()
+        self.__clock = pygame.time.Clock()
 
         # Initializes the font for the HUD
         self.__primary_font = pygame.font.Font("data/fonts/digital-7 mono.ttf", 100)
 
         # Music (all songs in this list are made my Pogo)
-        self.__music_folder = "data/music/"
+        self.__music_dir = "data/music/"
         self.__musicboard = tuple(
-            [song for song in listdir(self.__music_folder) if song.endswith(".ogg")]
+            song for song in listdir(self.__music_dir) if song.endswith(".ogg")
         )
 
         # A song will be randomly chosen from the musicboard and loaded.
         pygame.mixer.music.set_volume(1)
-        pygame.mixer.music.load(self.__music_folder + choice(self.__musicboard))
+        pygame.mixer.music.load(self.__music_dir + choice(self.__musicboard))
+
+        # Set the initial time difference.
+        delta = 2147483648 - int(time.time())
+        self.__time_array = self.__convert_seconds_to_time(delta)
+
+    # Main loop
+    def run(self):
+        # Initially, a song will be ready to play.
         next_song_ready = True
 
         # Closing the window or clicking the ESC key terminates the program.
         while not self.__user_terminates_program():
             # Sets the FPS to 30
-            clock.tick(30)
+            self.__clock.tick(30)
 
             # Converts the difference between the end of the Unix 32-bit timestamp (2 ** 31)
             # and the current time into days, hours, minutes, and seconds.
-            self.__time_array = self.__convert_seconds_to_time(2147483648 - int(time.time()))
+            delta = 2147483648 - int(time.time())
+            self.__time_array = self.__convert_seconds_to_time(delta)
 
             # A song will be randomly chosen and played every 5 minutes.
-            if self.__time_array[2] % 5 == 0:
-                if self.__time_array[3] == 0:
+            if self.__time_array[2] % 5 == 0:  # Minutes at a mutiple of 5
+                if self.__time_array[3] == 0:  # Seconds at 0
                     if next_song_ready:
                         pygame.mixer.music.play()
                         next_song_ready = False
                 elif not next_song_ready:
-                    pygame.mixer.music.load(self.__music_folder + choice(self.__musicboard))
+                    pygame.mixer.music.load(self.__music_dir + choice(self.__musicboard))
                     next_song_ready = True
 
             # Draws the timer
             self.__draw_timer()
-    
 
     # Draws the timer
     def __draw_timer(self):
@@ -98,7 +106,7 @@ class UnixEpochEndCountdown(object):
             self.__window.blit(colon, ((552 - colon.get_width()) // 2, timer_height))
             self.__window.blit(colon, ((882 - colon.get_width()) // 2, timer_height))
             self.__window.blit(colon, ((1222 - colon.get_width()) // 2, timer_height))
-        
+
         # Displays text and a line that divides the text and timer
         title = self.__primary_font.render("The Epochalypse", True, RED)
         self.__window.blit(title, ((800 - title.get_width()) // 2, 10))
@@ -106,24 +114,31 @@ class UnixEpochEndCountdown(object):
 
         # Updates the window
         pygame.display.update()
-    
 
     # Checks if the user presses the escape key or closes the window
-    def __user_terminates_program(self):
+    @staticmethod
+    def __user_terminates_program():
         to_be_terminated = False
+
         for event in pygame.event.get():
             # Pressing the ESC key or closing the window terminates the program
             if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
                 to_be_terminated = True
-        return to_be_terminated
-    
 
-    # The returned array contains the numbers in order of total days, hours, minutes, and seconds. 
+        return to_be_terminated
+
+    # The returned array contains the numbers in order of total days, hours, minutes, and seconds.
     @staticmethod
-    def __convert_seconds_to_time(seconds):
-        return [seconds // 86400, (seconds // 3600) % 24, (seconds // 60) % 60, seconds % 60]
+    def __convert_seconds_to_time(seconds: int):
+        return (
+            seconds // 86400,  # Days
+            (seconds // 3600) % 24,  # Hours
+            (seconds // 60) % 60,  # Minutes
+            seconds % 60  # Seconds
+        )
 
 
 # Executes the program.
 if __name__ == "__main__":
-    UnixEpochEndCountdown()
+    app = UnixEpochEndCountdown()
+    app.run()
