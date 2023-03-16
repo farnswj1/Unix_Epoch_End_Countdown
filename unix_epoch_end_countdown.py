@@ -12,8 +12,8 @@ All songs in this module are created by Pogo.
 '''
 
 # Imported modules
-from collections import namedtuple
 from random import choice
+from typing import NamedTuple
 from os import listdir
 import pygame
 import time
@@ -24,8 +24,12 @@ BLACK = (0, 0, 0)
 RED = (255, 0, 0)
 
 
-# Named Tuple(s)
-TimeArray = namedtuple("TimeArray", "days hours minutes seconds")
+# Named Tuple
+class TimeArray(NamedTuple):
+    days: int
+    hours: int
+    minutes: int
+    seconds: int
 
 
 class UnixEpochEndCountdown:
@@ -134,12 +138,10 @@ class UnixEpochEndCountdown:
     # The returned array contains the numbers in order of total days, hours, minutes, and seconds.
     @staticmethod
     def __convert_seconds_to_time(seconds: int):
-        return TimeArray(
-            seconds // 86400,  # Days
-            (seconds // 3600) % 24,  # Hours
-            (seconds // 60) % 60,  # Minutes
-            seconds % 60  # Seconds
-        )
+        days, r1 = divmod(seconds, 86400)
+        hours, r2 = divmod(r1, 3600)
+        minutes, _seconds = divmod(r2, 60)
+        return TimeArray(days, hours, minutes, _seconds)
 
 
 # Executes the program.
